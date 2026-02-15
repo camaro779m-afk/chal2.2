@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Admin Dashboard</h1>
+    <h2>Pending Families</h2>
+    <ul id="pending-families"></ul>
+    <h2>Add Child</h2>
+    <form id="child-form">
+      <input type="text" id="childName" placeholder="Child Name" required />
+      <input type="number" id="childAge" placeholder="Child Age" required />
+      <textarea
+        id="childNeeds"
+        placeholder="Special Needs or Preferences"
+      ></textarea>
+      <button type="submit">Add Child</button>
+    </form>
+    <script src="script.js"></script>
+    <script>
+      async function loadPendingFamilies() {
+        const res = await fetch("/api/families");
+        const families = await res.json();
+        const list = document.getElementById("pending-families");
+        list.innerHTML = families
+          .filter((f) => !f.verified)
+          .map(
+            (f) =>
+              `<li>${f.name} <button onclick="verify(${f.id})">Verify</button></li>`
+          )
+          .join("");
+      }
+      async function verify(id) {
+        await fetch(`/api/families/${id}/verify`, { method: "PUT" });
+        loadPendingFamilies();
+      }
+      document
+        .getElementById("child-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const data = {
+            id: Date.now(),
+            name: document.getElementById("childName").value,
+            age: parseInt(document.getElementById("childAge").value),
+            needs: document.getElementById("childNeeds").value,
+          };
+          await fetch("/api/children", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          alert("Child added!");
+        });
+      loadPendingFamilies();
+    </script>
+  </body>
+</html>

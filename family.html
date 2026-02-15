@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Family Registration</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Register Your Family</h1>
+    <form id="family-form">
+      <input type="text" id="name" placeholder="Family Name" required />
+      <input
+        type="number"
+        id="prefAgeMin"
+        placeholder="Preferred Min Age"
+        required
+      />
+      <input
+        type="number"
+        id="prefAgeMax"
+        placeholder="Preferred Max Age"
+        required
+      />
+      <textarea id="bio" placeholder="Family Bio"></textarea>
+      <button type="submit">Register</button>
+    </form>
+    <script src="script.js"></script>
+    <script>
+      document
+        .getElementById("family-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const data = {
+            id: Date.now(),
+            name: document.getElementById("name").value,
+            prefAgeMin: parseInt(document.getElementById("prefAgeMin").value),
+            prefAgeMax: parseInt(document.getElementById("prefAgeMax").value),
+            bio: document.getElementById("bio").value,
+          };
+          await fetch("/api/families", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          alert("Registration submitted for verification!");
+        });
+    </script>
+  </body>
+</html>
